@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: pgforge
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://pgbouncer:6432/pgforge}
+    username: ${SPRING_DATASOURCE_USERNAME:pgforge}
+    password: ${SPRING_DATASOURCE_PASSWORD:pgforge}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 5000
+      pool-name: pgforge-hikari
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: pgforge
+
+logging:
+  level:
+    root: INFO
+    "[io.pgforge]": DEBUG
