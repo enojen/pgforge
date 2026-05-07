@@ -1,0 +1,41 @@
+{
+  "title": "pgforge",
+  "uid": "pgforge",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "tags": ["pgforge"],
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "App up",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "up{job=\"pgforge-app\"}", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "mappings": [], "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] } } }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "HTTP requests / sec",
+      "gridPos": { "x": 6, "y": 0, "w": 18, "h": 8 },
+      "targets": [
+        { "expr": "sum by (uri) (rate(http_server_requests_seconds_count{job=\"pgforge-app\"}[1m]))", "legendFormat": "{{uri}}", "refId": "A" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "HikariCP active connections",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "hikaricp_connections_active{job=\"pgforge-app\"}", "legendFormat": "active", "refId": "A" },
+        { "expr": "hikaricp_connections_idle{job=\"pgforge-app\"}", "legendFormat": "idle", "refId": "B" }
+      ]
+    }
+  ]
+}

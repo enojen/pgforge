@@ -1,0 +1,100 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: pgforge-postgres
+    environment:
+      POSTGRES_DB: pgforge
+      POSTGRES_USER: pgforge
+      POSTGRES_PASSWORD: pgforge
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgforge -d pgforge"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.23.1-p3
+    container_name: pgforge-pgbouncer
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: pgforge
+      DB_PASSWORD: pgforge
+      DB_NAME: pgforge
+      AUTH_TYPE: scram-sha-256
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 100
+      DEFAULT_POOL_SIZE: 20
+      LISTEN_PORT: 6432
+      ADMIN_USERS: pgforge
+      STATS_USERS: pgforge
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 6432"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "6432:6432"
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    container_name: pgforge-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pgbouncer:6432/pgforge
+      SPRING_DATASOURCE_USERNAME: pgforge
+      SPRING_DATASOURCE_PASSWORD: pgforge
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+      start_period: 30s
+    ports:
+      - "8080:8080"
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: pgforge-prometheus
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=7d'
+    depends_on:
+      - app
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:12.0.0
+    container_name: pgforge-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres-data:
+  grafana-data:

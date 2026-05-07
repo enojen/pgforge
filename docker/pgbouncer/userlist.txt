@@ -1,0 +1,4 @@
+; Placeholder. The edoburu/pgbouncer image generates this file at runtime
+; from DB_USER / DB_PASSWORD env vars. Kept here for Experiment 2's hand-
+; managed pgbouncer mode.
+"pgforge" "pgforge"
