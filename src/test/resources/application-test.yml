@@ -1,0 +1,6 @@
+spring:
+  flyway:
+    enabled: true
+  datasource:
+    hikari:
+      maximum-pool-size: 5
