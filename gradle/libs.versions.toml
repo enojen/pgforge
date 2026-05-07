@@ -1,0 +1,28 @@
+[versions]
+spring-boot = "4.0.6"
+spring-dependency-management = "1.1.7"
+spotless = "7.0.4"
+testcontainers = "1.20.6"
+
+[libraries]
+spring-boot-starter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
+spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
+spring-boot-starter-jdbc = { group = "org.springframework.boot", name = "spring-boot-starter-jdbc" }
+spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
+spring-boot-starter-flyway = { group = "org.springframework.boot", name = "spring-boot-starter-flyway" }
+spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+spring-boot-testcontainers = { group = "org.springframework.boot", name = "spring-boot-testcontainers" }
+
+flyway-database-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql" }
+
+micrometer-registry-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus" }
+
+postgresql = { group = "org.postgresql", name = "postgresql" }
+
+testcontainers-junit-jupiter = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgresql = { group = "org.testcontainers", name = "postgresql", version.ref = "testcontainers" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
