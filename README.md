@@ -67,15 +67,15 @@ Wait ~30 seconds for the stack to come up. Once it's ready:
 
 ## Usage
 
-Run the first experiment:
+Once the stack is up, the app exposes a Prometheus scrape endpoint at `/actuator/prometheus` and a basic Grafana dashboard (HTTP throughput, HikariCP pool, app health) is provisioned out of the box.
+
+Experiments will be runnable via k6 once shipped:
 
 ```bash
-k6 run benchmarks/01-concurrency.js
+k6 run benchmarks/<NN>-<topic>.js
 ```
 
-While it runs, open Grafana to watch latency, throughput, and HikariCP pool metrics in real time.
-
-Each experiment script writes a summary report to `benchmarks/results/`. Example output shape from Experiment 1:
+Each experiment script will write a summary report to `benchmarks/results/`. Reports follow the shape:
 
 | Strategy    | Throughput | p95  | p99  | Correct?          |
 | ----------- | ---------- | ---- | ---- | ----------------- |
@@ -83,9 +83,7 @@ Each experiment script writes a summary report to `benchmarks/results/`. Example
 | Pessimistic | moderate   | high | high | ✅                |
 | Optimistic  | high       | low  | mod. | ✅ (with retries) |
 
-Numbers vary by hardware. The point is the trade-offs, not absolute values.
-
-Read the full write-up in [docs/01-concurrency.md](docs/01-concurrency.md).
+The above is illustrative, not measured. Numbers vary by hardware — the point is the trade-offs, not absolute values.
 
 ## Support
 
@@ -93,7 +91,7 @@ Open an [issue](https://github.com/<your-username>/pgforge/issues) for bugs, que
 
 ## Roadmap
 
-- [x] Experiment 1: Concurrency control
+- [ ] Experiment 1: Concurrency control
 - [ ] Experiment 2: Connection pooling
 - [ ] Experiment 3: Read/write split
 - [ ] Experiment 4: Indexing strategies
