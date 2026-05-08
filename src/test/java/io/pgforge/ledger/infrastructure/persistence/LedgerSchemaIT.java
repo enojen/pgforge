@@ -1,4 +1,4 @@
-package io.pgforge.ledger;
+package io.pgforge.ledger.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,7 +25,7 @@ class LedgerSchemaIT {
     void canInsertAccount() {
         Long id = jdbcClient
                 .sql("INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING id")
-                .params("alice", new BigDecimal("100.00"))
+                .params("alice-schema", new BigDecimal("100.00"))
                 .query(Long.class)
                 .single();
 
