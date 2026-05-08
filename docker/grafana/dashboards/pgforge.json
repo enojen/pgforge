@@ -36,6 +36,52 @@
         { "expr": "hikaricp_connections_active{job=\"pgforge-app\"}", "legendFormat": "active", "refId": "A" },
         { "expr": "hikaricp_connections_idle{job=\"pgforge-app\"}", "legendFormat": "idle", "refId": "B" }
       ]
+    },
+    {
+      "id": 4,
+      "type": "row",
+      "title": "Experiment 1 — Concurrency",
+      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 1 },
+      "collapsed": false
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Transfer latency by strategy (p95 / p99)",
+      "gridPos": { "x": 0, "y": 17, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.99, sum by (le, strategy) (rate(ledger_transfer_seconds_bucket{job=\"pgforge-app\"}[1m])))", "legendFormat": "{{strategy}} p99", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum by (le, strategy) (rate(ledger_transfer_seconds_bucket{job=\"pgforge-app\"}[1m])))", "legendFormat": "{{strategy}} p95", "refId": "B" }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Transfer throughput by strategy",
+      "gridPos": { "x": 12, "y": 17, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "sum by (strategy) (rate(ledger_transfer_seconds_count{job=\"pgforge-app\"}[1m]))", "legendFormat": "{{strategy}} req/s", "refId": "A" }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Optimistic retries & exhaustions",
+      "gridPos": { "x": 0, "y": 25, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(ledger_transfer_retries_total{job=\"pgforge-app\", strategy=\"optimistic\"}[1m])", "legendFormat": "retries", "refId": "A" },
+        { "expr": "rate(ledger_transfer_exhaustions_total{job=\"pgforge-app\", strategy=\"optimistic\"}[1m])", "legendFormat": "exhausted", "refId": "B" }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Pessimistic deadlocks & insufficient funds",
+      "gridPos": { "x": 12, "y": 25, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "increase(ledger_transfer_deadlocks_total{job=\"pgforge-app\"}[1m])", "legendFormat": "deadlocks", "refId": "A" },
+        { "expr": "increase(ledger_transfer_insufficient_funds_total{job=\"pgforge-app\"}[1m])", "legendFormat": "insufficient funds", "refId": "B" }
+      ]
     }
   ]
 }
